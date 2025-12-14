@@ -1,88 +1,81 @@
-# Cosmic Totem Arcana
+# Astro App Global
 
 ## 概述
-文案生成、推送、会员与支付的全栈实现。前端基于 Vite + Vue3，后端基于 FastAPI，集成 Amazon Bedrock、FCM、Stripe、PayPal。
+- 前端：Vue 3 + Vite，包含卡牌渲染、分享导出、引导注册、会员与支付、推送管理
+- 后端：FastAPI，提供命理计算、AI 文案包、推送、支付、分享奖励与短链、认证等接口
 
-## 目录结构
-- frontend：前端应用
-- backend：后端服务
+## 代码结构
+- `frontend/` 前端应用
+- `backend/` 后端服务
 
-## 环境配置
-在 `backend/.env` 填写：
-- FCM_CREDENTIALS_PATH 或 GOOGLE_APPLICATION_CREDENTIALS
-- STRIPE_SECRET_KEY、STRIPE_WEBHOOK_SECRET、STRIPE_PRICE_PREMIUM、STRIPE_PRICE_VIP、PUBLIC_BASE_URL、CORS_ORIGINS
-- PAYPAL_ENV、PAYPAL_CLIENT_ID、PAYPAL_CLIENT_SECRET、PAYPAL_WEBHOOK_ID
-- AWS_ACCESS_KEY_ID、AWS_SECRET_ACCESS_KEY、AWS_REGION、BEDROCK_MODEL_ID
+## 环境要求
+- Python 3.10
+- Node.js 18（包管理器使用 npm）
 
-## 启动
-后端：在 `backend` 目录运行 `uvicorn app:app --host 127.0.0.1 --port 8000 --reload`
-前端：在 `frontend` 目录运行 `npm run dev`，访问 `http://localhost:5173/`（端口占用时自动切换）
+## 本地启动（开发模式）
+- 后端
+  - 进入 `backend` 目录
+  - 创建并激活虚拟环境（Windows PowerShell）：
+    - `python -m venv .venv`
+    - `.\.venv\Scripts\Activate.ps1`
+  - 安装依赖：
+    - `pip install -r requirements.txt`
+  - 运行服务：
+    - `uvicorn app:app --host 127.0.0.1 --port 8000 --reload`
+- 前端
+  - 进入 `frontend` 目录
+  - 安装依赖：`npm install`
+  - 启动开发服务：`npm run dev`
+  - 默认访问 `http://localhost:5173`，已配置代理到后端 `http://127.0.0.1:8000`
 
-## 关键页面
-- `/membership`：Stripe/PayPal 支付与会员刷新
-- `/push`：设备 Token 注册、批量管理、发送明细与失败重试
-- `/`：卡牌首页
+## 环境变量（最小集）
+- 后端（`backend/.env`）
+  - `PUBLIC_BASE_URL`（必填，用于短链和 OG 抓取，如 `https://app.example.com`）
+  - `STRIPE_SECRET_KEY`、`STRIPE_WEBHOOK_SECRET`
+  - `PAYPAL_WEBHOOK_ID`
+  - `AWS_REGION` 或 `AWS_DEFAULT_REGION`
+  - `FCM_CREDENTIALS_PATH` 或 `GOOGLE_APPLICATION_CREDENTIALS`
+- 前端（`frontend/.env` 或 `frontend/.env.development`）
+  - `VITE_GOOGLE_CLIENT_ID`（Google 登录）
+  - 如需自定义后端地址：`VITE_API_BASE=https://api.example.com/api`
 
-## Webhook
-- Stripe：`/api/pay/stripe/webhook`
-- PayPal：`/api/pay/paypal/webhook`
+## 环境变量示例
+- `backend/.env`（示例）
+  - `PUBLIC_BASE_URL=https://app.example.com`
+  - `STRIPE_SECRET_KEY=sk_live_...`
+  - `STRIPE_WEBHOOK_SECRET=whsec_...`
+  - `PAYPAL_WEBHOOK_ID=...`
+  - `AWS_REGION=ap-southeast-2`
+  - `FCM_CREDENTIALS_PATH=C:\\path\\to\\firebase.json`
+- `frontend/.env.development`（示例）
+  - `VITE_API_BASE=http://127.0.0.1:8000/api`
+  - `VITE_GOOGLE_CLIENT_ID=...apps.googleusercontent.com`
 
-## 健康检查
-`GET /api/health` 返回关键配置加载状态
+## 关键接口
+- 认证：`POST /api/auth/register`、`POST /api/auth/login`、`GET /api/auth/check`、`POST /api/auth/oauth/google`、`POST /api/auth/oauth/apple`
+- 个人偏好：`POST /api/profile/lang`、`POST /api/profile/consent`
+- 命理与卡牌：`POST /api/calc`、`GET /api/user/fate/{user_id}`、`GET /api/card/details`、`GET /api/card/free-pack`、`GET /api/card/premium-pack`、`GET /api/card/line-detail`
+- 推送：偏好/令牌/发送/详版/失败重试
+- 支付：Stripe（checkout/confirm/webhook）、PayPal（order/capture/webhook）
+- 分享与奖励：`POST /api/share/success`、`POST /api/share/referral`、`POST /api/share/referral-paid`、`GET /api/share/permissions/{user_id}`、`POST /api/share/consume-credit`、`POST /api/share/shorten`、`GET /s/{code}`、`GET /api/share/og-image`
 
-## 开发与部署建议
-- 使用 `.env` 管理密钥，不入库
-- CORS 按前端端口与域名维护 `CORS_ORIGINS`
-- 订阅价格使用 `subscription` 模式，续费事件联动更新会员到期
+## 分享与短链
+- 自动生成短链 `/s/{code}`，OG/Twitter 元信息按语言本地化
+- 前端一键导出平台尺寸：Instagram(1080×1350)、TikTok(1080×1920 PNG)、Facebook(1200×630)、WhatsApp(750×1000 WebP)
 
-## 部署
-### 前提
-- Python 3.11.x、Node.js 18+、npm
-- Stripe/PayPal 测试或生产凭据
-- Firebase 服务账号 JSON（FCM）
-- AWS 账户（Bedrock）
+## 安全与合规
+- GDPR 同意位：`POST /api/profile/consent`
+- Webhook 验签：Stripe/PayPal
+- 不提交任何密钥或凭据（如 `google-services.json`、`.env`）
 
-### 后端
-1. 配置环境变量到 `backend/.env`
-2. 生产运行示例（Windows）：
-   - 前台启动：`uvicorn app:app --host 0.0.0.0 --port 8000`
-   - 后台服务：使用任务计划或 NSSM 注册为服务，执行同上命令
-3. 反向代理（示例 Nginx）：
-   - 将 `https://api.yourdomain.com` 代理到 `http://127.0.0.1:8000`
-   - Webhook 路径：`/api/pay/stripe/webhook`、`/api/pay/paypal/webhook`
-4. CORS：在 `.env` 设置 `CORS_ORIGINS=https://your-frontend-domain`
+## 分支策略
+- 以 `main` 为主；后续如需 `develop` 将另行说明
 
-### 前端
-1. 设置 API 基础地址：`frontend/.env.production`
-   - `VITE_API_BASE=https://api.yourdomain.com/api`
-2. 构建：`npm run build`
-3. 部署 `frontend/dist` 到静态服务器（Nginx/Apache/Netlify 等）
+## 常见问题
+- **无法访问后端**：检查前端 `VITE_API_BASE` 与后端监听端口
+- **短链不抓取**：确保 `PUBLIC_BASE_URL` 指向公网域名，OG 页可被平台爬取
+- **推送失败**：检查 FCM 服务账号路径与令牌有效性
 
-### Stripe 配置
-- Webhook 端点：`https://api.yourdomain.com/api/pay/stripe/webhook`
-- 事件：`checkout.session.completed`、`invoice.payment_succeeded`、`invoice.payment_failed`、`customer.subscription.updated`
-- 签名密钥：写入 `STRIPE_WEBHOOK_SECRET`
-- 价格：
-  - 一次性价格 → Checkout `mode=payment`
-  - 订阅价格（recurring） → Checkout `mode=subscription`
-
-### PayPal 配置
-- 环境：`PAYPAL_ENV=sandbox` 或 `live`
-- 凭据：`PAYPAL_CLIENT_ID`、`PAYPAL_CLIENT_SECRET`
-- Webhook ID：`PAYPAL_WEBHOOK_ID`
-- 端点：`https://api.yourdomain.com/api/pay/paypal/webhook`
-
-### 验证清单
-- 健康检查：`GET /api/health`
-- 前端页面：`/membership`、`/push`
-- 支付联调：前端点击 `Pay/PayPal` → 返回后会员更新；Webhook 回调成功（200）
-- 推送联调：注册 Token → `Send Detail` 查看逐条结果 → `Retry Failed`
-
-### 迁移与数据
-- 使用 `sqlite`：首启自动建表，数据位于 `backend/data.db`
-- 备份策略：定期复制数据库文件或迁移到托管数据库（PostgreSQL/MySQL）
-
-### 运维建议
-- 日志与告警：Webhook 签名失败/订阅失败加入告警渠道（邮件/Slack）
-- 安全：为管理接口加入鉴权（JWT/API Key），限制敏感操作权限
-- 域名与 TLS：为前后端与 Webhook 使用 HTTPS 与有效证书
+## 联系方式
+- 协作者：TREAMENG（GitHub）
+- Owner 邮箱：nathan.dengshuai@gmail.com

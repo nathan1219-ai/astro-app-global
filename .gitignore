@@ -1,13 +1,45 @@
-# 前端忽略项
-node_modules/
-dist/
-.env
-frontend/android/app/google-services.json
-# 后端忽略项
-venv/
-__pycache__/
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
 *.log
-.env
-# 通用忽略项
+*.tmp
+*.swp
 .DS_Store
-Thumbs.db
+
+# Android credentials (do not commit secrets)
+frontend/android/app/google-services.json
+
+# Env files
+.env
+*.env.local
+frontend/.env*
+backend/.env*
+
+# IDE
+.idea/
+.vscode/
+
+# Python / Backend
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+.python-version
+venv/
+.venv/
+
+# Local DB / data
+backend/data.db
+
+# Coverage / reports
+coverage/
+*.coverage
+reports/
+
+# Build artifacts
+build/
+dist/
+out/
+
