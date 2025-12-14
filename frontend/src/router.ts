@@ -11,6 +11,8 @@ import PushConsent from './views/PushConsent.vue'
 import CardDetails from './views/CardDetails.vue'
 import CardAdmin from './views/CardAdmin.vue'
 import LineDetails from './views/LineDetails.vue'
+import Terms from './views/Terms.vue'
+import Privacy from './views/Privacy.vue'
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +29,8 @@ export const router = createRouter({
     { path: '/community', component: Community },
     { path: '/login', component: Login },
     { path: '/language', component: LanguageSelect },
+    { path: '/terms', component: Terms },
+    { path: '/privacy', component: Privacy },
   ]
 })
 

@@ -1,0 +1,66 @@
+{
+  "info": {
+    "name": "Astro App Global API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{api}}/auth/register", "host": ["{{api}}"], "path": ["auth", "register"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"pass\"\n}" }
+      }
+    },
+    {
+      "name": "Auth Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{api}}/auth/login", "host": ["{{api}}"], "path": ["auth", "login"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"pass\"\n}" }
+      }
+    },
+    {
+      "name": "Calc",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{api}}/calc", "host": ["{{api}}"], "path": ["calc"] },
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Explorer\",\n  \"birthday\": \"1995-01-01\",\n  \"calendar\": \"gregorian\"\n}" }
+      }
+    },
+    {
+      "name": "Card Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{api}}/card/details?sign=白羊座&zodiac=龙&element=木&language=en",
+          "host": ["{{api}}"],
+          "path": ["card", "details"],
+          "query": [
+            { "key": "sign", "value": "白羊座" },
+            { "key": "zodiac", "value": "龙" },
+            { "key": "element", "value": "木" },
+            { "key": "language", "value": "en" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Share Success",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": { "raw": "{{api}}/share/success", "host": ["{{api}}"], "path": ["share", "success"] },
+        "body": { "mode": "raw", "raw": "{\n  \"user_id\": 1,\n  \"language\": \"en\"\n}" }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "api", "value": "http://127.0.0.1:8000/api" },
+    { "key": "token", "value": "" }
+  ]
+}

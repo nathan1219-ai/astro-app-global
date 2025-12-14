@@ -24,6 +24,7 @@
       <button @click="expTiktok">Export TikTok</button>
       <button @click="expFb">Export Facebook</button>
       <button @click="expWa">Export WhatsApp</button>
+      <button @click="expStories">Export Stories</button>
     </div>
     <textarea v-model="text" rows="6"></textarea>
   </div>
@@ -104,10 +105,27 @@ function expFb() {
 function expWa() {
   const fn = props.getImageFor
   if (!fn) return exportImg()
-  let url = fn('image/webp', 750, 1000, 'wa', 0.75) || ''
+  let q = 0.9
+  let url = fn('image/webp', 750, 1000, 'wa', q) || ''
+  for (let i=0; i<6; i++) {
+    const size = Math.ceil((url.length * 3) / 4) // base64 to bytes approx
+    if (size <= 300 * 1024) break
+    q = Math.max(0.5, q - 0.1)
+    url = fn('image/webp', 750, 1000, 'wa', q) || url
+  }
   const a = document.createElement('a')
   a.href = url
   a.download = 'whatsapp.webp'
+  a.click()
+}
+
+function expStories() {
+  const fn = props.getImageFor
+  if (!fn) return exportImg()
+  const url = fn('image/jpeg', 1080, 1920, 'ins', 0.92) || ''
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'stories.jpg'
   a.click()
 }
 
