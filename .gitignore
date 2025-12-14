@@ -1,0 +1,13 @@
+# 前端忽略项
+node_modules/
+dist/
+.env
+frontend/android/app/google-services.json
+# 后端忽略项
+venv/
+__pycache__/
+*.log
+.env
+# 通用忽略项
+.DS_Store
+Thumbs.db
